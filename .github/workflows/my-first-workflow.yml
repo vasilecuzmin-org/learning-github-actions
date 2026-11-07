@@ -51,3 +51,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
+      - name: Configure KubeConfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          kubectl version
+          kubectl get nodes
