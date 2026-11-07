@@ -57,3 +57,15 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
           kubectl version
           kubectl get nodes
+      - name: install yq 
+        run: |
+          sudo curl -L https://github.com/mikefarah/yq/releases/download/v4.30.8/yq_linux_amd64 -o /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+      - name: Update deployment image
+        run: |
+          yq e '.spec.template.spec.containers[0].image = "ghcr.io/vasilecuzmin-org/arc-demo:latest"' -i k8s/deployment.yaml
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
