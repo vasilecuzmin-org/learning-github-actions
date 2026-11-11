@@ -51,3 +51,39 @@ jobs:
       IMAGE_NAME: ghcr.io/vasilecuzmin-org/app-py:latest
     secrets:
       KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+  selenium-tests:
+    environment: stg
+    needs: deploy-with-kubectl
+    runs-on: github-actions-scaleset-demo # this is our self-hosted scaleset runner, which is a Windows machine with Chrome installed
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Google Chrome # Why do we need to install Chrome here? Because the self-hosted runner is a Windows machine, and we want to ensure that the latest version of Chrome is installed for our Selenium tests.
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: latest
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Selenium tests
+        env:
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }}
+        run: |
+          mkdir -p reports
+          pytest tests/test_selenium.py --headless --disable-gpu --window-size=1920,1080 --html=reports/selenium_report.html --self-contained-html
+
+      - name: Upload Selenium test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: selenium-test-report
+          path: reports/selenium_report.html
