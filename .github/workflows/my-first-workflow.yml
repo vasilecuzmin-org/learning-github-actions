@@ -48,7 +48,6 @@ jobs:
     uses: vasilecuzmin-org/reusable-workflows/.github/workflows/deploy-with-kubectl.yml@main
     with:
       ENVIRONMENT: stg
-      NAMESPACE: ${{ vars.NAMESPACE }}
       IMAGE_NAME: ghcr.io/vasilecuzmin-org/app-py:latest
     secrets:
       KUBECONFIG: ${{ secrets.KUBECONFIG }}
