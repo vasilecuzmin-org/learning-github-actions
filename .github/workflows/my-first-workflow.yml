@@ -80,7 +80,7 @@ jobs:
           APP_BASE_URL: ${{ vars.APP_BASE_URL }}
         run: |
           mkdir -p reports
-          pytest tests/test_selenium.py --headless --disable-gpu --window-size=1920,1080 --html=reports/selenium_report.html --self-contained-html
+          pytest tests/ --headless --disable-gpu --window-size=1920,1080 --html=reports/selenium_report.html --self-contained-html
 
       - name: Upload Selenium test report
         uses: actions/upload-artifact@v3
