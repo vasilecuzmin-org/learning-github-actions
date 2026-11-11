@@ -7,7 +7,7 @@ on:
     branches:
       - main
 
-permissions:  #Required for code scanning and secret scanning to work
+permissions: #Required for code scanning and secret scanning to work
   actions: read
   security-events: write
   packages: write
@@ -15,13 +15,14 @@ permissions:  #Required for code scanning and secret scanning to work
 
 jobs:
   ci-pipeline-job:
-    uses: VasileCuzmin/reusable-workflows/.github/workflows/ci-pipeline.yaml@main
+    uses: vasilecuzmin-org/reusable-workflows/.github/workflows/ci-pipeline.yaml@main
     with:
-      run_sonarqube: true
-      run_codeql: true
+      run_sonarqube: false
+      run_codeql: false
+      run_publish_ghcr: false
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  
+
   demo-1:
     name: Demo job 1
     runs-on: [self-hosted, arc-demo]
@@ -42,3 +43,11 @@ jobs:
           echo "Kernel Version: $(uname -r)"
           echo "Runner name: $RUNNER_NAME"
           echo "Runner OS: $RUNNER_OS"
+  deploy-with-kubectl:
+    needs: [ci-pipeline-job]
+    uses: vasilecuzmin-org/reusable-workflows/.github/workflows/deploy-with-kubectl.yml@main
+    with:
+      ENVIRONMENT: stg
+      IMAGE_NAME: ghcr.io/vasilecuzmin-org/app-py:latest
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
