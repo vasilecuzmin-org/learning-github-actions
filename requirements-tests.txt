@@ -1,0 +1,7 @@
+selenium
+flask
+pytest
+pytest-cov
+gunicorn
+pytest-html
+webdriver-manager
